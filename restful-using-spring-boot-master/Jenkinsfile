@@ -2,11 +2,11 @@ pipeline {
     agent any
     environment {
         JAR_PATH = "target/springboot-crud-0.0.1-SNAPSHOT.jar"
-        DEPLOY_SERVER = '192.168.1.36'        // IP address of your Windows machine
-        DEPLOY_USER = 'sai baba'              // Windows username
-        DEPLOY_PATH = 'C:/Users/SAI BABA/Downloads/restful-using-spring-boot-master/restful-using-spring-boot-master' // Deployment directory
+        DEPLOY_SERVER = '192.168.1.36'
+        DEPLOY_USER = 'sai baba'
+        DEPLOY_PATH = 'C:/Users/SAI BABA/Downloads/restful-using-spring-boot-master/restful-using-spring-boot-master'
+        JAVA_HOME = 'C:/Program Files/Java/jdk-17' // Path to JDK 17
     }
-
     stages {
         stage('Checkout') {
             steps {
@@ -16,14 +16,12 @@ pipeline {
 
         stage('Build') {
             steps {
-                // Use 'bat' instead of 'sh' for Windows build steps
                 bat 'mvn clean package'
             }
         }
 
         stage('Test') {
             steps {
-                // Use 'bat' instead of 'sh' for Windows test steps
                 bat 'mvn test'
             }
         }
@@ -31,19 +29,16 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Securely retrieve credentials from Jenkins credential manager
-                    withCredentials([usernamePassword(credentialsId: 'your-credentials-id', usernameVariable: 'USER', passwordVariable: 'PASSWORD')]) {
-                        def copyCommand = """
-                        powershell.exe -Command "Copy-Item -Path ${JAR_PATH} -Destination \\\\${DEPLOY_SERVER}\\C\$\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\"
-                        """
-                        def startCommand = """
-                        powershell.exe -Command "Invoke-Command -ComputerName ${DEPLOY_SERVER} -Credential (New-Object PSCredential('${USER}', (ConvertTo-SecureString '${PASSWORD}' -AsPlainText -Force))) -ScriptBlock { Start-Process 'java' -ArgumentList '-jar C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\springboot-crud-0.0.1-SNAPSHOT.jar' -NoNewWindow -RedirectStandardOutput 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\output.log' -RedirectStandardError 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\error.log' -PassThru }"
-                        """
+                    def copyCommand = """
+                    powershell.exe -Command "Copy-Item -Path ${JAR_PATH} -Destination \\\\${DEPLOY_SERVER}\\C$\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\"
+                    """
+                    def startCommand = """
+                    powershell.exe -Command "Invoke-Command -ComputerName ${DEPLOY_SERVER} -Credential (New-Object PSCredential('${DEPLOY_USER}', (ConvertTo-SecureString 'your-password' -AsPlainText -Force))) -ScriptBlock { Start-Process 'java' -ArgumentList '-jar C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\springboot-crud-0.0.1-SNAPSHOT.jar' -NoNewWindow -RedirectStandardOutput 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\output.log' -RedirectStandardError 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\error.log' -PassThru }"
+                    """
 
-                        // Execute the commands
-                        powershell copyCommand
-                        powershell startCommand
-                    }
+                    // Execute the commands
+                    bat copyCommand
+                    bat startCommand
                 }
             }
         }
