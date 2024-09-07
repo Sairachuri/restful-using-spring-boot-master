@@ -39,6 +39,10 @@ pipeline {
 
                     echo "Deploying ${jarFile} to ${deployPath}"
 
+                    // Check if the JAR file exists before attempting to copy
+                    bat "if exist \"${jarFile}\" echo JAR file exists"
+                    bat "if not exist \"${deployPath}\" mkdir \"${deployPath}\""
+
                     // Copy file to deployment path
                     bat "copy /Y \"${jarFile}\" \"${deployPath}\""
 
