@@ -1,43 +1,42 @@
 pipeline {
     agent any
+
     environment {
         JAR_PATH = 'target/springboot-crud-0.0.1-SNAPSHOT.jar'
-        DEPLOY_SERVER = '192.168.1.36' // IP address of your Windows machine
-        DEPLOY_USER = 'sai baba' // Windows username
-        DEPLOY_PATH = 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master' // Deployment directory
+        DEPLOY_SERVER = '192.168.1.36'
+        DEPLOY_USER = 'sai baba'
+        DEPLOY_PATH = 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Sairachuri/restful-using-spring-boot-master.git'
+                git 'https://github.com/Sairachuri/restful-using-spring-boot-master.git'
             }
         }
 
         stage('Build') {
             steps {
-                bat 'mvn clean package'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                bat 'mvn test'
+                script {
+                    // Use Maven to build the project
+                    sh 'mvn clean package'
+                }
             }
         }
 
         stage('Deploy') {
             steps {
                 script {
-                    def copyCommand = """
-                    powershell.exe -Command "Copy-Item -Path '${JAR_PATH}' -Destination '\\\\${DEPLOY_SERVER}\\C$\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master'"
-                    """
-                    def startCommand = """
-                    powershell.exe -Command "Invoke-Command -ComputerName ${DEPLOY_SERVER} -Credential (New-Object PSCredential('${DEPLOY_USER}', (ConvertTo-SecureString 'your-password' -AsPlainText -Force))) -ScriptBlock { Start-Process 'java' -ArgumentList '-jar C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\springboot-crud-0.0.1-SNAPSHOT.jar' -NoNewWindow -RedirectStandardOutput 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\output.log' -RedirectStandardError 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\error.log' -PassThru }"
-                    """
+                    // Path to the JAR file
+                    def jarFile = "${env.JAR_PATH}"
 
-                    bat copyCommand
-                    bat startCommand
+                    // Destination path on the Windows machine
+                    def deployPath = "${env.DEPLOY_USER}@${env.DEPLOY_SERVER}:${env.DEPLOY_PATH}"
+
+                    echo "Deploying ${jarFile} to ${deployPath}"
+
+                    // Use SCP for deployment
+                    sh "scp ${jarFile} ${deployPath}"
                 }
             }
         }
@@ -45,10 +44,10 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment successful!'
+            echo 'Deployment completed successfully.'
         }
         failure {
-            echo 'Deployment failed!'
+            echo 'Deployment failed.'
         }
     }
 }
