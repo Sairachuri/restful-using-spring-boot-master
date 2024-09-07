@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     // Use Maven to build the project
-                    sh 'mvn clean package'
+                    bat 'mvn clean package'
                 }
             }
         }
@@ -31,12 +31,15 @@ pipeline {
                     def jarFile = "${env.JAR_PATH}"
 
                     // Destination path on the Windows machine
-                    def deployPath = "${env.DEPLOY_USER}@${env.DEPLOY_SERVER}:${env.DEPLOY_PATH}"
+                    def deployPath = "${env.DEPLOY_PATH}\\${JAR_PATH}"
 
                     echo "Deploying ${jarFile} to ${deployPath}"
 
-                    // Use SCP for deployment
-                    sh "scp ${jarFile} ${deployPath}"
+                    // Copy file to deployment path
+                    bat "copy ${jarFile} ${deployPath}"
+
+                    // Optional: Command to run the JAR file if needed
+                    // bat "java -jar ${deployPath}"
                 }
             }
         }
