@@ -2,15 +2,15 @@ pipeline {
     agent any
     environment {
         JAR_PATH = "target/springboot-crud-0.0.1-SNAPSHOT.jar"
-        DEPLOY_SERVER = '192.168.1.36'        // IP address of your Windows machine
-        DEPLOY_USER = 'sai baba'              // Windows username
+        DEPLOY_SERVER = '192.168.1.36' // IP address of your Windows machine
+        DEPLOY_USER = 'sai baba' // Windows username
         DEPLOY_PATH = 'C:/Users/SAI BABA/Downloads/restful-using-spring-boot-master/restful-using-spring-boot-master' // Deployment directory
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/Sairachuri/restful-using-spring-boot-master.git'
+                git branch: 'main', url: 'https://github.com/Sairachuri/restful-using-spring-boot-master.git'
             }
         }
 
@@ -29,7 +29,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Correcting the command to handle Windows paths and escaping
                     def copyCommand = """
                     powershell.exe -Command "Copy-Item -Path '${JAR_PATH}' -Destination '\\\\${DEPLOY_SERVER}\\C$\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\'"
                     """
