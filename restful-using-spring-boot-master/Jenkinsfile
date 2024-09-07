@@ -36,7 +36,6 @@ pipeline {
                     powershell.exe -Command "Invoke-Command -ComputerName ${DEPLOY_SERVER} -Credential (New-Object PSCredential('${DEPLOY_USER}', (ConvertTo-SecureString 'your-password' -AsPlainText -Force))) -ScriptBlock { Start-Process 'java' -ArgumentList '-jar C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\springboot-crud-0.0.1-SNAPSHOT.jar' -NoNewWindow -RedirectStandardOutput 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\output.log' -RedirectStandardError 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\error.log' -PassThru }"
                     """
 
-                    // Execute the commands
                     bat copyCommand
                     bat startCommand
                 }
