@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        JAVA_HOME = 'C:\\Program Files\\Java\\jdk-17' // Ensure this path is correct
         JAR_PATH = 'target/springboot-crud-0.0.1-SNAPSHOT.jar'
         DEPLOY_SERVER = '192.168.1.36'
         DEPLOY_USER = 'sai baba'
@@ -18,7 +19,6 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Use Maven to build the project
                     bat 'mvn clean package'
                 }
             }
@@ -27,19 +27,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Path to the JAR file
                     def jarFile = "${env.WORKSPACE}\\${env.JAR_PATH}"
-
-                    // Destination path on the Windows machine
-                    def deployPath = "${env.DEPLOY_PATH}\\${env.JAR_PATH}".replace('/', '\\')
+                    def deployPath = "${env.DEPLOY_PATH}".replace('/', '\\')
 
                     echo "Deploying ${jarFile} to ${deployPath}"
-
-                    // Copy file to deployment path
-                    bat "copy /Y \"${jarFile}\" \"${env.DEPLOY_PATH}\""
-
-                    // Optional: Command to run the JAR file if needed
-                    // bat "java -jar \"${deployPath}\""
+                    bat "copy /Y \"${jarFile}\" \"${deployPath}\""
                 }
             }
         }
