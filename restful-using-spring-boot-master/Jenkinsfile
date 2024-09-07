@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Sairachuri/restful-using-spring-boot-master.git'
+                git branch: 'master', url: 'https://github.com/Sairachuri/restful-using-spring-boot-master.git'
             }
         }
 
@@ -28,18 +28,18 @@ pipeline {
             steps {
                 script {
                     // Path to the JAR file
-                    def jarFile = "${env.JAR_PATH}"
+                    def jarFile = "${env.WORKSPACE}\\${env.JAR_PATH}"
 
                     // Destination path on the Windows machine
-                    def deployPath = "${env.DEPLOY_PATH}\\${JAR_PATH}"
+                    def deployPath = "${env.DEPLOY_PATH}\\${env.JAR_PATH}".replace('/', '\\')
 
                     echo "Deploying ${jarFile} to ${deployPath}"
 
                     // Copy file to deployment path
-                    bat "copy ${jarFile} ${deployPath}"
+                    bat "copy /Y \"${jarFile}\" \"${env.DEPLOY_PATH}\""
 
                     // Optional: Command to run the JAR file if needed
-                    // bat "java -jar ${deployPath}"
+                    // bat "java -jar \"${deployPath}\""
                 }
             }
         }
