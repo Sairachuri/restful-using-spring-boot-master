@@ -3,10 +3,8 @@ pipeline {
 
     environment {
         JAVA_HOME = 'C:\\Program Files\\Java\\jdk-17'
-        JAR_PATH = 'target/springboot-crud-0.0.1-SNAPSHOT.jar'
-        DEPLOY_SERVER = '192.168.1.36'
-        DEPLOY_USER = 'sai baba'
-        DEPLOY_PATH = 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master'
+        JAR_PATH = 'target\\springboot-crud-0.0.1-SNAPSHOT.jar'
+        DEPLOY_PATH = 'C:\\Users\\SAI BABA\\Desktop\\deployments'
     }
 
     stages {
@@ -21,7 +19,7 @@ pipeline {
             steps {
                 script {
                     // Change directory to where the pom.xml is located
-                    dir('restful-using-spring-boot-master') { // Adjust if necessary
+                    dir('restful-using-spring-boot-master') {
                         bat 'mvn clean package'
                     }
                 }
@@ -40,6 +38,7 @@ pipeline {
                     echo "Deploying ${jarFile} to ${deployPath}"
 
                     // Check if the JAR file exists before attempting to copy
+                    bat "dir \"${env.WORKSPACE}\\restful-using-spring-boot-master\\target\""
                     bat "if exist \"${jarFile}\" echo JAR file exists"
                     bat "if not exist \"${deployPath}\" mkdir \"${deployPath}\""
 
@@ -47,7 +46,7 @@ pipeline {
                     bat "copy /Y \"${jarFile}\" \"${deployPath}\""
 
                     // Optional: Command to run the JAR file if needed
-                    // bat "java -jar \"${deployPath}\\${env.JAR_PATH}\""
+                    // bat "java -jar \"${deployPath}\\springboot-crud-0.0.1-SNAPSHOT.jar\""
                 }
             }
         }
