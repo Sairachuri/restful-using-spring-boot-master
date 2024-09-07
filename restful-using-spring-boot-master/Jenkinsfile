@@ -29,8 +29,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    // Correcting the command to handle Windows paths and escaping
                     def copyCommand = """
-                    powershell.exe -Command "Copy-Item -Path ${JAR_PATH} -Destination \\\\${DEPLOY_SERVER}\\C$\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\"
+                    powershell.exe -Command "Copy-Item -Path '${JAR_PATH}' -Destination '\\\\${DEPLOY_SERVER}\\C$\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\'"
                     """
                     def startCommand = """
                     powershell.exe -Command "Invoke-Command -ComputerName ${DEPLOY_SERVER} -Credential (New-Object PSCredential('${DEPLOY_USER}', (ConvertTo-SecureString 'your-password' -AsPlainText -Force))) -ScriptBlock { Start-Process 'java' -ArgumentList '-jar C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\springboot-crud-0.0.1-SNAPSHOT.jar' -NoNewWindow -RedirectStandardOutput 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\output.log' -RedirectStandardError 'C:\\Users\\SAI BABA\\Downloads\\restful-using-spring-boot-master\\restful-using-spring-boot-master\\error.log' -PassThru }"
